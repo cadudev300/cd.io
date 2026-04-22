@@ -13,12 +13,18 @@ end
 local List_Of_Bullets = {}
 sound_of_bullet = love.audio.newSource("Assets/sounds/tiro_8bit.wav", "static")
 sound_of_explosion = love.audio.newSource('Assets/sounds/explosao_8bit.wav', "static") 
-function Entity.keypressed(self)
+function Entity.keypressed(self, c)
 	local bullet = {x = self.x+self.width, y = self.y+self.height/2, width = 5, height = 5, speed = 300}
+	if self.x >= c.x then
+		-- Inverte a direção da bala
+		bullet.speed = -bullet.speed 
+		-- Muda o x da bala
+		bullet.x = self.x
+	end
 	table.insert(List_Of_Bullets, bullet)
 end
 
-function Entity.update( self, v, dt )
+function Entity.update( self, c, dt )
 	-- Sistema de colisao com a Tela no eixo x
 	if self.x <= 0 then
 		self.x = self.x - self.x
@@ -33,7 +39,7 @@ function Entity.update( self, v, dt )
 	end
 	-- atualiza e movimenta as 'balas'
 	for i,v in ipairs( List_Of_Bullets ) do
-		v.x = v.x + v.speed * dt
+			v.x = v.x + v.speed * dt
 		-- Sistema de colisao com as 'balas'
 		if v.x + v.width >= self.x and
 			self.x + self.width >= v.x and
@@ -48,7 +54,7 @@ function Entity.update( self, v, dt )
 		
 	-- Sistema de Pontuação
 	if self.life <= 0 then
-			v.score = v.score + 1
+			c.score = c.score + 1
 	end
 	-- Sistema de renascimento dos Jogadores
 	if self.life <= 0 then
